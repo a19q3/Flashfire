@@ -10,6 +10,13 @@
     <main id="app">
       <div id="game-shell">
         <div id="game"></div>
+        <div class="host-tools">
+          <button id="host-return" aria-label="Return to UTXOPlay" title="Return to UTXOPlay">
+            &#8592;</button
+          ><button id="host-fullscreen" aria-label="Enter fullscreen" title="Enter fullscreen">
+            &#x26F6;
+          </button>
+        </div>
 
         <header id="hud" class="hidden" aria-live="polite">
           <section class="hud-card status-card">
@@ -83,7 +90,12 @@
               <span class="back-icon" aria-hidden="true"></span>
             </button>
             <div class="lobby-brand"><b>FLASHFIRE</b><small>COMBAT LOBBY</small></div>
-            <div id="profile-summary" aria-live="polite"></div>
+            <div>
+              <div id="profile-summary" aria-live="polite"></div>
+              <small id="session-note" class="hidden"
+                >Progress lasts for this visit; reloading starts fresh.</small
+              >
+            </div>
             <button
               id="settings-button"
               class="lobby-icon-button"

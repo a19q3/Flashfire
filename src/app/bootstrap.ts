@@ -1,4 +1,13 @@
 import Phaser from 'phaser';
+import {
+  assetPath,
+  hosted,
+  reportReady,
+  boundedViewport,
+  exitToStore,
+  enterFullscreen,
+  confirmInGame,
+} from './hosting';
 import { gameConfig } from './gameConfig';
 import { getActiveArena } from '../scenes/ArenaScene';
 import { LoadoutController } from '../ui/LoadoutController';
@@ -18,7 +27,7 @@ function requiredButton(selector: string): HTMLButtonElement {
 function bindOrientationGuard(): void {
   const shell = document.querySelector<HTMLElement>('#game-shell');
   if (!shell) throw new Error('Game shell is missing');
-  const portrait = window.matchMedia('(orientation: portrait) and (max-width: 850px)');
+  const portrait = window.matchMedia('(orientation: portrait) and (pointer: coarse)');
   const update = (): void => {
     shell.classList.toggle('orientation-blocked', portrait.matches);
     if (portrait.matches) getActiveArena()?.pauseForOrientation();
@@ -30,15 +39,38 @@ function bindOrientationGuard(): void {
 
 export function bootstrap(): Phaser.Game {
   const game = new Phaser.Game(gameConfig);
+  reportReady();
+  const resize = (): void => {
+    const size = boundedViewport();
+    game.scale.resize(size.width, size.height);
+    game.scale.refresh();
+  };
+  game.events.once('ready', resize);
+  window.addEventListener('resize', resize);
+  document.querySelector<HTMLButtonElement>('#host-fullscreen')?.addEventListener('click', () => {
+    void enterFullscreen();
+  });
+  document.querySelector<HTMLButtonElement>('#host-return')?.addEventListener('click', async () => {
+    getActiveArena()?.pauseForOrientation();
+    if (await confirmInGame('Leave Flashfire and return to UTXOPlay?')) exitToStore();
+  });
+  document.querySelectorAll<HTMLAnchorElement>('.legal-strip a').forEach((link) => {
+    link.href = assetPath(link.getAttribute('href') || '');
+    link.target = '_self';
+  });
+  if (hosted) {
+    document.querySelector('#export-save-button')?.classList.add('hidden');
+    document.querySelector('#session-note')?.classList.remove('hidden');
+  }
   if (import.meta.env.DEV) window.__flashfireGame = game;
   const loadout = new LoadoutController();
   const showLobby = (pushHistory = true): void => {
-    if (pushHistory && window.location.pathname !== '/lobby')
+    if (!hosted && pushHistory && window.location.pathname !== '/lobby')
       window.history.pushState({}, '', `/lobby${window.location.search}`);
     loadout.open();
   };
   const showHome = (pushHistory = true): void => {
-    if (pushHistory && window.location.pathname !== '/')
+    if (!hosted && pushHistory && window.location.pathname !== '/')
       window.history.pushState({}, '', `/${window.location.search}`);
     loadout.close();
   };
@@ -48,6 +80,7 @@ export function bootstrap(): Phaser.Game {
   };
   requiredButton('#play-button').addEventListener('click', () => showLobby());
   loadout.deploy.addEventListener('click', () => {
+    if (matchMedia('(pointer: coarse)').matches) void enterFullscreen();
     loadout.close();
     getActiveArena()?.startMatch();
   });

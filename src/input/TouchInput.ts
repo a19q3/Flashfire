@@ -2,6 +2,7 @@ import type { InputSnapshot } from './actions';
 
 export class TouchInput {
   private aimSensitivity = 1;
+  private readonly resets: Array<() => void> = [];
   private readonly state: InputSnapshot = {
     moveX: 0,
     wantsJet: false,
@@ -46,6 +47,11 @@ export class TouchInput {
     });
   }
 
+  reset(): void {
+    this.resets.forEach((reset) => reset());
+    this.state.grenade = false;
+  }
+
   snapshot(): InputSnapshot {
     const snapshot = { ...this.state };
     this.state.grenade = false;
@@ -64,6 +70,7 @@ export class TouchInput {
     const knob = element.querySelector<HTMLElement>('i');
     if (!knob) throw new Error('Touch stick knob is missing');
 
+    let pointer: number | null = null;
     const update = (event: PointerEvent): void => {
       const rect = element.getBoundingClientRect();
       const dx = event.clientX - (rect.left + rect.width / 2);
@@ -76,21 +83,29 @@ export class TouchInput {
       knob.style.transform = `translate(${x}px, ${y}px)`;
       onMove(x / radius, y / radius);
     };
-    const finish = (event: PointerEvent): void => {
-      if (element.hasPointerCapture(event.pointerId))
-        element.releasePointerCapture(event.pointerId);
+    const finish = (): void => {
+      const previous = pointer;
+      pointer = null;
+      if (previous !== null && element.hasPointerCapture(previous))
+        element.releasePointerCapture(previous);
       knob.style.transform = '';
       onEnd();
     };
-
+    this.resets.push(finish);
     element.addEventListener('pointerdown', (event) => {
+      if (pointer !== null) return;
+      event.preventDefault();
+      pointer = event.pointerId;
       element.setPointerCapture(event.pointerId);
       update(event);
     });
     element.addEventListener('pointermove', (event) => {
-      if (element.hasPointerCapture(event.pointerId)) update(event);
+      if (pointer === event.pointerId) update(event);
     });
-    element.addEventListener('pointerup', finish);
-    element.addEventListener('pointercancel', finish);
+    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+      element.addEventListener(type, (event) => {
+        if (pointer === (event as PointerEvent).pointerId) finish();
+      });
+    }
   }
 }

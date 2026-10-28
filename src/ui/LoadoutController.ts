@@ -1,3 +1,4 @@
+import { assetPath, confirmInGame } from '../app/hosting';
 import { GRENADES } from '../content/grenades';
 import { DIFFICULTIES, DIFFICULTY_IDS } from '../content/difficulties';
 import { MAPS, MAP_IDS, MAP_UNLOCK_RANK } from '../content/maps';
@@ -179,7 +180,7 @@ export class LoadoutController {
       button.type = 'button';
       button.className = 'map-option';
       button.dataset.mapId = mapId;
-      button.innerHTML = `<img src="${map.previewPath}" alt="" /><span><b>${map.displayName}</b><small>${map.mechanic}</small></span>`;
+      button.innerHTML = `<img src="${assetPath(map.previewPath)}" alt="" /><span><b>${map.displayName}</b><small>${map.mechanic}</small></span>`;
       button.addEventListener('click', () => {
         setSelectedMap(mapId);
         this.refresh();
@@ -357,8 +358,8 @@ export class LoadoutController {
       if (file && repository.importJson(await file.text())) this.refresh();
       input.value = '';
     });
-    required<HTMLButtonElement>('#reset-save-button').addEventListener('click', () => {
-      if (window.confirm('Reset local Flashfire progression?')) {
+    required<HTMLButtonElement>('#reset-save-button').addEventListener('click', async () => {
+      if (await confirmInGame('Reset Flashfire progression for this visit?')) {
         repository.reset();
         this.refresh();
       }
@@ -371,10 +372,10 @@ export class LoadoutController {
     const selectedMap = MAPS[getSelectedMap()];
     const selectedMode = MODES[getSelectedMode()];
 
-    this.lobbyBackdrop.src = `/assets/maps/${selectedMap.id}-background.jpg`;
+    this.lobbyBackdrop.src = assetPath(`/assets/maps/${selectedMap.id}-background.jpg`);
     this.lobbyMapName.textContent = selectedMap.displayName;
     this.lobbyMapAmbience.textContent = selectedMap.ambience.toUpperCase();
-    this.selectedMapImage.src = selectedMap.previewPath;
+    this.selectedMapImage.src = assetPath(selectedMap.previewPath);
     this.selectedMapName.textContent = selectedMap.displayName;
     this.selectedMapMechanic.textContent = selectedMap.mechanic;
     this.selectedModeName.textContent = selectedMode.displayName.toUpperCase();

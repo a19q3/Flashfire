@@ -3,6 +3,7 @@ import { copyFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 export default defineConfig({
+  base: process.env.FLASHFIRE_BASE || '/',
   plugins: [
     {
       name: 'flashfire-static-lobby-route',

@@ -386,6 +386,25 @@ export class SaveRepository {
 
 let browserRepository: SaveRepository | null = null;
 export function getSaveRepository(): SaveRepository {
-  if (!browserRepository) browserRepository = new SaveRepository(window.localStorage);
+  if (!browserRepository) {
+    let storage: StorageLike;
+    try {
+      storage = window.localStorage;
+      storage.setItem('flashfire.storage-test', '1');
+      storage.removeItem('flashfire.storage-test');
+    } catch {
+      const values = new Map<string, string>();
+      storage = {
+        getItem: (key) => values.get(key) ?? null,
+        setItem: (key, value) => {
+          values.set(key, value);
+        },
+        removeItem: (key) => {
+          values.delete(key);
+        },
+      };
+    }
+    browserRepository = new SaveRepository(storage);
+  }
   return browserRepository;
 }

@@ -1,3 +1,8 @@
+import { assetPath, reportReady } from '../app/hosting';
+const bundledMaps = import.meta.glob('/public/assets/maps/*.json', {
+  eager: true,
+  import: 'default',
+});
 import Phaser from 'phaser';
 import { chooseBehavior, reactionDelay } from '../ai/BotBrain';
 import { hasLineOfSight, type RectangleObstacle, type SmokeZone } from '../ai/BotPerception';
@@ -229,25 +234,29 @@ export class ArenaScene extends Phaser.Scene {
 
   preload(): void {
     ['platform', 'medkit', 'fuel', 'weapon-crate'].forEach((key) =>
-      this.load.image(key, `/assets/${key}.png`),
+      this.load.image(key, assetPath(`/assets/${key}.png`)),
     );
     ['ranger', 'raider-coral', 'raider-gold', 'raider-green', 'raider-violet'].forEach((key) =>
-      this.load.spritesheet(key, `/assets/${key}-sheet.png`, {
+      this.load.spritesheet(key, assetPath(`/assets/${key}-sheet.png`), {
         frameWidth: 96,
         frameHeight: 96,
       }),
     );
     WEAPON_IDS.forEach((weaponId) =>
-      this.load.image(WEAPONS[weaponId].spriteKey, `/assets/${WEAPONS[weaponId].spriteKey}.png`),
+      this.load.image(
+        WEAPONS[weaponId].spriteKey,
+        assetPath(`/assets/${WEAPONS[weaponId].spriteKey}.png`),
+      ),
     );
     MAP_IDS.forEach((mapId) => {
-      this.load.json(MAPS[mapId].tilemapKey, MAPS[mapId].jsonPath);
-      this.load.image(`background-${mapId}`, `/assets/maps/${mapId}-background.jpg`);
+      this.cache.json.add(MAPS[mapId].tilemapKey, bundledMaps[`/public/assets/maps/${mapId}.json`]);
+      this.load.image(`background-${mapId}`, assetPath(`/assets/maps/${mapId}-background.jpg`));
     });
   }
 
   create(): void {
     activeArenaRef.current = this;
+    reportReady(true);
     this.matchState = new MatchStateMachine();
     this.matchEnded = false;
     this.timeLeft = MATCH_SECONDS;
@@ -272,7 +281,8 @@ export class ArenaScene extends Phaser.Scene {
       coarsePointer: window.matchMedia('(pointer: coarse)').matches,
     });
     this.graphicsProfile = GRAPHICS_PROFILES[quality];
-    this.reducedMotion = visualSettings.reducedMotion;
+    this.reducedMotion =
+      visualSettings.reducedMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.cameraShake = visualSettings.cameraShake;
     this.keyBindings = { ...visualSettings.keyBindings };
     this.gamepadDeadzone = visualSettings.gamepadDeadzone;
@@ -392,6 +402,8 @@ export class ArenaScene extends Phaser.Scene {
   }
 
   pauseForOrientation(): void {
+    this.touch.reset();
+    this.input.keyboard?.resetKeys();
     if (this.matchState.state === 'playing') this.setPaused(true);
   }
 
@@ -466,6 +478,8 @@ export class ArenaScene extends Phaser.Scene {
 
   private setPaused(paused: boolean): void {
     if (paused && this.matchState.state === 'playing') {
+      this.touch.reset();
+      this.input.keyboard?.resetKeys();
       this.matchState.transition('paused');
       this.physics.pause();
       this.time.paused = true;
@@ -1150,7 +1164,10 @@ export class ArenaScene extends Phaser.Scene {
       -Math.cos(player.aimAngle) * lead,
       -Math.sin(player.aimAngle) * lead * 0.45,
     );
-    const mouseFiring = this.input.activePointer.isDown && this.input.activePointer.button === 0;
+    const mouseFiring =
+      this.input.activePointer.isDown &&
+      !this.input.activePointer.wasTouch &&
+      this.input.activePointer.button === 0;
     if (mouseFiring || touch.firing || gamepadFiring) this.fireWeapon(player, time);
     if (touch.grenade || pad?.buttons[4]?.pressed) this.throwGrenade(player);
     if (pad?.buttons[2]?.pressed) this.startReload(player);
