@@ -442,6 +442,7 @@ export class ArenaScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
+    this.input.activePointer.updateWorldPoint(this.cameras.main);
     this.updateGamepadPause();
     this.updateCrosshair();
     this.animatePickups(time);

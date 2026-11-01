@@ -24,6 +24,7 @@ test('arrow controls move in every direction while standard letters remain activ
           y: number;
           setPosition: (x: number, y: number) => void;
           setVelocity: (x: number, y: number) => void;
+          setAcceleration: (x: number, y: number) => void;
         };
       };
       return { x: scene.player.x, y: scene.player.y };
@@ -34,37 +35,41 @@ test('arrow controls move in every direction while standard letters remain activ
         player: {
           setPosition: (x: number, y: number) => void;
           setVelocity: (x: number, y: number) => void;
+          setAcceleration: (x: number, y: number) => void;
+          fuel: number;
         };
       };
-      scene.player.setPosition(640, 360);
+      scene.player.setPosition(640, 180);
       scene.player.setVelocity(0, 0);
+      scene.player.setAcceleration(0, 0);
+      scene.player.fuel = 100;
     });
 
   await reset();
   const beforeLeft = await position();
   await page.keyboard.down('ArrowLeft');
-  await page.waitForTimeout(220);
+  await expect.poll(async () => (await position()).x).toBeLessThan(beforeLeft.x);
   await page.keyboard.up('ArrowLeft');
   expect((await position()).x).toBeLessThan(beforeLeft.x);
 
   await reset();
   const beforeLetter = await position();
   await page.keyboard.down('a');
-  await page.waitForTimeout(220);
+  await expect.poll(async () => (await position()).x).toBeLessThan(beforeLetter.x);
   await page.keyboard.up('a');
   expect((await position()).x).toBeLessThan(beforeLetter.x);
 
   await reset();
   const beforeUp = await position();
   await page.keyboard.down('ArrowUp');
-  await page.waitForTimeout(220);
+  await expect.poll(async () => (await position()).y).toBeLessThan(beforeUp.y);
   await page.keyboard.up('ArrowUp');
   expect((await position()).y).toBeLessThan(beforeUp.y);
 
   await reset();
   const beforeDown = await position();
   await page.keyboard.down('ArrowDown');
-  await page.waitForTimeout(220);
+  await expect.poll(async () => (await position()).y).toBeGreaterThan(beforeDown.y);
   await page.keyboard.up('ArrowDown');
   expect((await position()).y).toBeGreaterThan(beforeDown.y);
 });
@@ -110,7 +115,13 @@ test('damaging map hazards affect the player but never bots or the player score'
       score: scene.modeRuntime.rangerScore,
     };
     scene.applyHazard(scene.player, train);
-    await new Promise((resolve) => window.setTimeout(resolve, 700));
+    await new Promise<void>((resolve) => {
+      const check = () => {
+        if (!scene.player.alive) resolve();
+        else window.requestAnimationFrame(check);
+      };
+      check();
+    });
     return {
       bot: botResult,
       originalBotHealth: botHealth,

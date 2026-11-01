@@ -136,7 +136,10 @@ test('match inventory starts with M9 and enforces two recoverable weapon slots',
     return scene.addPickup(scene.player.x + 300, scene.player.y, 'medkit', 'health', undefined, 100)
       .pickupId;
   });
-  await page.waitForTimeout(250);
+  await page.waitForFunction((pickupId) => {
+    const scene = window.__flashfireGame?.scene.getScene('arena') as any;
+    return !scene.pickups.getChildren().some((item: any) => item.pickupId === pickupId);
+  }, temporaryPickupId);
   const temporaryPickupExists = await page.evaluate((pickupId) => {
     const scene = window.__flashfireGame?.scene.getScene('arena') as unknown as {
       pickups: { getChildren: () => Array<{ pickupId: string }> };

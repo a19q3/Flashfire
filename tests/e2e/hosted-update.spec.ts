@@ -79,6 +79,11 @@ test('required desktop sizes preserve bounded backing and inverse pointer coordi
   await page.locator('#mode-selector-button').click();
   await page.locator('[data-mode-id="training-range"]').click();
   await page.locator('#deploy-button').click();
+  await page.evaluate(() => {
+    const scene = window.__flashfireGame!.scene.getScene('arena');
+    scene.physics.pause();
+    scene.cameras.main.stopFollow();
+  });
   for (const [width, height] of [
     [1920, 1080],
     [2560, 1080],
