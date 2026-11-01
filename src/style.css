@@ -1681,6 +1681,9 @@ body:has(#loadout-screen:not(.hidden)) .host-tools {
   top: 74px;
   bottom: auto;
 }
+body:has(.lobby-modal:not(.hidden)) .host-tools {
+  display: none;
+}
 .lobby-briefing {
   pointer-events: none;
 }

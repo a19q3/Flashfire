@@ -1,8 +1,5 @@
 import { assetPath, reportReady } from '../app/hosting';
-const bundledMaps = import.meta.glob('/public/assets/maps/*.json', {
-  eager: true,
-  import: 'default',
-});
+import bundledMaps from 'virtual:flashfire-maps';
 import Phaser from 'phaser';
 import { chooseBehavior, reactionDelay } from '../ai/BotBrain';
 import { hasLineOfSight, type RectangleObstacle, type SmokeZone } from '../ai/BotPerception';

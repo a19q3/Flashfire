@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { resizeGameViewport } from '../helpers/resize';
 
 interface TouchPoint {
   id: number;
@@ -109,7 +110,7 @@ test('rotation clears held touch and keyboard inputs before the match resumes', 
   await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [move, aim] });
   await page.keyboard.down('d');
   await expect.poll(async () => (await touchState(page)).rightHeld).toBe(true);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await resizeGameViewport(page, { width: 390, height: 844 });
   await expect(page.locator('#orientation-blocker')).toBeVisible();
   expect(await touchState(page)).toMatchObject({
     moveX: 0,
@@ -119,7 +120,7 @@ test('rotation clears held touch and keyboard inputs before the match resumes', 
     rightHeld: false,
   });
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-  await page.setViewportSize({ width: 844, height: 390 });
+  await resizeGameViewport(page, { width: 844, height: 390 });
   await expect(page.locator('#pause-screen')).toBeVisible();
   await page.locator('#resume-button').click();
   expect(await touchState(page)).toMatchObject({ moveX: 0, firing: false, rightHeld: false });

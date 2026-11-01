@@ -87,7 +87,7 @@ test('required desktop sizes preserve bounded backing and inverse pointer coordi
   ]) {
     await page.setViewportSize({ width, height });
     await expect(page.locator('canvas')).toHaveCSS('width', `${width}px`);
-    await page.mouse.move(width * 0.62, height * 0.43);
+    await page.mouse.move(Math.round(width * 0.62), Math.round(height * 0.43));
     await page.waitForTimeout(100);
     const mapping = await page.evaluate(() => {
       const game = window.__flashfireGame!,
@@ -101,8 +101,8 @@ test('required desktop sizes preserve bounded backing and inverse pointer coordi
         aspect: canvas.width / canvas.height,
         x: pointer.x,
         y: pointer.y,
-        expectedX: (innerWidth * 0.62 * canvas.width) / box.width,
-        expectedY: (innerHeight * 0.43 * canvas.height) / box.height,
+        expectedX: (Math.round(innerWidth * 0.62) * canvas.width) / box.width,
+        expectedY: (Math.round(innerHeight * 0.43) * canvas.height) / box.height,
         worldX: pointer.worldX,
         worldY: pointer.worldY,
         inverseX: expected.x,

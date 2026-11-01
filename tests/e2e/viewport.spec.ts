@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { resizeGameViewport } from '../helpers/resize';
 
 test('game canvas covers the viewport and HUD overlays stay inside it', async ({
   page,
@@ -46,6 +47,7 @@ test('game canvas covers the viewport and HUD overlays stay inside it', async ({
 test('portrait blocks play and rotating back leaves an active match paused', async ({
   page,
 }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chromium', 'Rotation gate applies to touch devices');
   await page.setViewportSize({ width: 844, height: 390 });
   await page.goto('/');
   await expect(page.locator('#orientation-blocker')).toBeHidden();
@@ -54,7 +56,7 @@ test('portrait blocks play and rotating back leaves an active match paused', asy
   await expect(page.locator('#hud')).toBeVisible();
   await expect(page.locator('#mobile-controls')).toBeVisible();
 
-  await page.setViewportSize({ width: 390, height: 844 });
+  await resizeGameViewport(page, { width: 390, height: 844 });
   await expect(page.locator('#orientation-blocker')).toBeVisible();
   await expect(page.locator('#orientation-blocker')).toContainText('ROTATE YOUR PHONE');
   await expect(page.locator('#mobile-controls')).toBeHidden();
@@ -63,7 +65,7 @@ test('portrait blocks play and rotating back leaves an active match paused', asy
     fullPage: true,
   });
 
-  await page.setViewportSize({ width: 844, height: 390 });
+  await resizeGameViewport(page, { width: 844, height: 390 });
   await expect(page.locator('#orientation-blocker')).toBeHidden();
   await expect(page.locator('#pause-screen')).toBeVisible();
   await expect(page.locator('#mobile-controls')).toBeHidden();
@@ -128,7 +130,7 @@ test('camera keeps the complete player visible at map edges and after respawn', 
     });
 
   for (const viewport of viewports) {
-    await page.setViewportSize(viewport);
+    await resizeGameViewport(page, viewport);
     await page.waitForTimeout(650);
 
     const canvas = await page.locator('canvas').boundingBox();

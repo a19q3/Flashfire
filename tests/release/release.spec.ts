@@ -34,7 +34,12 @@ test('production artifact loads, completes a match, saves, and reloads', async (
 
   await page.reload();
   await expect(page.locator('#loadout-screen')).toBeVisible();
-  await expect(page.locator('#profile-summary')).toContainText('1 MATCHES');
+  await expect(page.locator('#profile-summary')).toContainText(/[1-9]\d* XP/);
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem('flashfire.save')!).profile.totalMatches,
+    ),
+  ).toBe(1);
   expect(errors).toEqual([]);
 });
 
