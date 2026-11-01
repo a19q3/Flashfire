@@ -1,0 +1,21 @@
+services:
+  flashfire:
+    image: utxoplay-flashfire:1.0.1
+    container_name: utxoplay-flashfire
+    restart: unless-stopped
+    init: true
+    networks: [games]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 96m
+    cpus: '0.25'
+    pids_limit: 32
+    logging: {driver: json-file, options: {max-size: 5m, max-file: '2'}}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+networks:
+  games: {external: true, name: utxoplay-games}

@@ -1,3 +1,4 @@
+import { assetPath } from '../app/hosting';
 import { WEAPONS } from '../content/weapons';
 import { GRENADES } from '../content/grenades';
 import type { MatchSnapshot } from '../core/types/gameplay';
@@ -117,7 +118,7 @@ export class HudController {
       const image = button.querySelector<HTMLImageElement>('img');
       const label = button.querySelector<HTMLElement>('span');
       if (image) {
-        image.src = weaponId ? `/assets/${WEAPONS[weaponId].spriteKey}.png` : '';
+        image.src = weaponId ? assetPath(`/assets/${WEAPONS[weaponId].spriteKey}.png`) : '';
         image.hidden = !weaponId;
       }
       if (label) label.textContent = weaponId ? WEAPONS[weaponId].displayName : 'EMPTY';
@@ -128,7 +129,7 @@ export class HudController {
     const weapon = WEAPONS[weaponId];
     const image = this.pickupPrompt.querySelector<HTMLImageElement>('img');
     const label = this.pickupPrompt.querySelector<HTMLElement>('b');
-    if (image) image.src = `/assets/${weapon.spriteKey}.png`;
+    if (image) image.src = assetPath(`/assets/${weapon.spriteKey}.png`);
     if (label) label.textContent = weapon.displayName;
     this.pickupPrompt.setAttribute('aria-label', `Pick up ${weapon.displayName}`);
     this.pickupPrompt.classList.remove('hidden');

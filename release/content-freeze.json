@@ -1,10 +1,10 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "files": {
     "src/content/weapons.ts": "c86f61d55f5c289fcdea737cc8bb36968281b1a1230e0657e27444106e9d93a5",
     "src/content/grenades.ts": "9c83d8658e389416afd5ecf3e7ae3a2a1d8afcd63c9a34636659b32e07d08617",
-    "src/content/difficulties.ts": "f3d336d34985b0ecb20af5343dd0c23e21b74d1e02370a10a4cfbf46f2eb7020",
+    "src/content/difficulties.ts": "d7360e51f87c24a1cb620add2e0288b90c665c9ee68a91d4531c50294096c7b8",
     "src/content/maps.ts": "480e0836e2ad0e4cc14fd5b593f73d61688fd84e585b675c4de0b032de6781bb",
-    "src/content/modes.ts": "5c7b3fcbfc2d4be9ad86bcf34ee010875b0dd468d335c760f24e91949f1d0254"
+    "src/content/modes.ts": "e0a95316741f44a1cba8d481d3152e34de2e33cc355a7e74045c337531fea9de"
   }
 }

@@ -1,0 +1,48 @@
+{
+  "id": "flashfire",
+  "title": "Flashfire",
+  "subtitle": "Jetpack arena combat.",
+  "genre": "Shooter",
+  "mode": "Single-player",
+  "description": "A 2D jetpack arena shooter with six modes, eight unlockable battlegrounds and eleven weapons. Take on AI opponents, collect supply drops and master vertical combat. Keyboard, controller and landscape touch controls.",
+  "cover": "/assets/flashfire-cover.webp",
+  "version": "1.0.1",
+  "runtime": "browser",
+  "hosting": "utxoplay",
+  "pricing": "free",
+  "priceCkb": "0",
+  "controls": "A/D or arrows move; W/Up/Space uses the jetpack. Mouse aims and fires. R reloads, G throws a grenade, 1/2 switches weapon, E picks up a weapon. Escape pauses. Gamepad and landscape touch controls supported.",
+  "players": "1 player \u00b7 AI opponents",
+  "headline": "Take flight.|Bring the fire.",
+  "heroDescription": "Boost between platforms, seize fresh weapons and outmaneuver your rivals. Six modes. Eight arenas. Free to play.",
+  "caption": "FLASHFIRE \u00b7 BY HALLAB",
+  "developer": {
+    "name": "Hallab",
+    "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqw8fjafgp88f50dqajh7fuzv6qdmv5hg8gva7969",
+    "sourceUrl": "https://github.com/Hallab7/Flashfire"
+  },
+  "publisher": {
+    "name": "Hallab",
+    "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqw8fjafgp88f50dqajh7fuzv6qdmv5hg8gva7969"
+  },
+  "presentation": {
+    "accent": "#f2c15a",
+    "tag": "JETPACK ARENA COMBAT",
+    "length": "Quick matches \u00b7 survival \u00b7 training",
+    "input": "Mouse + keyboard \u00b7 gamepad \u00b7 touch",
+    "note": "Free to play. Progress lasts for the current visit.",
+    "repo": "Flashfire"
+  },
+  "sourceUrl": "https://github.com/Hallab7/Flashfire",
+  "sourceRevision": "dddc0dcbc26ec4ed00a1d9d31729b2fdb4c10561",
+  "replayDescription": "Local single-player matches against AI. Progress and settings last for this visit and reset on reload. No cloud save or Myelin verification.",
+  "tags": [
+    "shooter",
+    "action",
+    "platformer",
+    "singleplayer",
+    "short-sessions",
+    "touch-friendly",
+    "stylized"
+  ]
+}
