@@ -158,7 +158,7 @@ test('camera keeps the complete player visible at map edges and after respawn', 
         scene.player.setPosition(x, y);
       }, position);
       await page.waitForTimeout(500);
-      expect((await playerVisibility()).fullyVisible).toBe(true);
+      await expect.poll(async () => (await playerVisibility()).fullyVisible).toBe(true);
     }
 
     await page.evaluate(() => {
